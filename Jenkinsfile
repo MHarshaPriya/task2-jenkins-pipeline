@@ -23,7 +23,7 @@ pipeline {
               mkdir -p "$WORKSPACE/.docker"
 
               # create an auth entry (base64); support both GNU and macOS base64
-              auth=$(printf "%s:%s" "$DOCKERHUB_USERNAME" "$DOCKERHUB_TOKEN" | (base64 -w0 2>/dev/null || base64))
+              auth=$(printf "%s:%s" "$DOCKERHUB_USERNAME" "$DOCKERHUB_TOKEN" | base64)
               cat > "$WORKSPACE/.docker/config.json" <<EOF
               {"auths":{"https://index.docker.io/v1/":{"auth":"'$auth'"}}}
               EOF
@@ -73,3 +73,4 @@ pipeline {
     }
   } // stages
 }
+
