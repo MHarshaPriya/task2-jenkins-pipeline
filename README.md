@@ -9,4 +9,4 @@ Files:
 - nodejs-demo-app/Dockerfile
 - Jenkinsfile
 
-Make sure Jenkins has Docker installed and a credential with id `dockerhub-creds` (username + token).
+  updated jenkins file
