@@ -4,7 +4,7 @@
 This repo contains a simple Node.js app and a Jenkinsfile to build, test and push a Docker image.
 
 Files:
-- nodejs-demo-app/index.js
+- nodejs-demo-app/index.js.
 - nodejs-demo-app/package.json
 - nodejs-demo-app/Dockerfile
 - Jenkinsfile.
