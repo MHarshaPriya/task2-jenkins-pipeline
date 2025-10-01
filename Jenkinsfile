@@ -16,11 +16,11 @@ pipeline {
       steps {
         script {
           withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
-                                            usernameVariable: 'DOCKERHUB_USERNAME',
-                                            passwordVariable: 'DOCKERHUB_TOKEN')]) {
+                                            usernameVariable: 'DOCKER_USER',
+                                            passwordVariable: 'DOCKER_PASS')]) {
             sh """
-              ${DOCKER_PATH} login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN
-              ${DOCKER_PATH} build -t $DOCKERHUB_USERNAME/nodejs-demo-app:jenkins nodejs-demo-app
+              ${DOCKER_PATH} login -u $DOCKER_USER -p $DOCKER_PASS
+              ${DOCKER_PATH} build -t $DOCKER_USER/nodejs-demo-app:jenkins nodejs-demo-app
             """
           }
         }
@@ -30,9 +30,13 @@ pipeline {
     stage('Test (run container)') {
       steps {
         script {
-          sh """
-            ${DOCKER_PATH} run --rm $DOCKERHUB_USERNAME/nodejs-demo-app:jenkins npm test
-          """
+          withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
+                                            usernameVariable: 'DOCKER_USER',
+                                            passwordVariable: 'DOCKER_PASS')]) {
+            sh """
+              ${DOCKER_PATH} run --rm $DOCKER_USER/nodejs-demo-app:jenkins npm test
+            """
+          }
         }
       }
     }
@@ -41,11 +45,11 @@ pipeline {
       steps {
         script {
           withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
-                                            usernameVariable: 'DOCKERHUB_USERNAME',
-                                            passwordVariable: 'DOCKERHUB_TOKEN')]) {
+                                            usernameVariable: 'DOCKER_USER',
+                                            passwordVariable: 'DOCKER_PASS')]) {
             sh """
-              ${DOCKER_PATH} login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN
-              ${DOCKER_PATH} push $DOCKERHUB_USERNAME/nodejs-demo-app:jenkins
+              ${DOCKER_PATH} login -u $DOCKER_USER -p $DOCKER_PASS
+              ${DOCKER_PATH} push $DOCKER_USER/nodejs-demo-app:jenkins
             """
           }
         }
