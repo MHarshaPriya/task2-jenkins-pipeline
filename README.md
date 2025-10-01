@@ -5,7 +5,7 @@ This repo contains a simple Node.js app and a Jenkinsfile to build, test and pus
 
 Files:
 - nodejs-demo-app/index.js.
-- nodejs-demo-app/package.json
+- nodejs-demo-app/package.json.
 - nodejs-demo-app/Dockerfile
 - Jenkinsfile.
 
