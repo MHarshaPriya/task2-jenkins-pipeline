@@ -15,7 +15,14 @@ pipeline {
     stage('Build (Docker)') {
       steps {
         script {
-          sh "${DOCKER_PATH} build -t harshapriya28/nodejs-demo-app:jenkins nodejs-demo-app"
+          withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
+                                            usernameVariable: 'DOCKERHUB_USERNAME',
+                                            passwordVariable: 'DOCKERHUB_TOKEN')]) {
+            sh """
+              ${DOCKER_PATH} login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN
+              ${DOCKER_PATH} build -t $DOCKERHUB_USERNAME/nodejs-demo-app:jenkins nodejs-demo-app
+            """
+          }
         }
       }
     }
@@ -23,7 +30,9 @@ pipeline {
     stage('Test (run container)') {
       steps {
         script {
-          sh "${DOCKER_PATH} run --rm harshapriya28/nodejs-demo-app:jenkins npm test"
+          sh """
+            ${DOCKER_PATH} run --rm $DOCKERHUB_USERNAME/nodejs-demo-app:jenkins npm test
+          """
         }
       }
     }
@@ -31,8 +40,14 @@ pipeline {
     stage('Push to Docker Hub') {
       steps {
         script {
-          sh "${DOCKER_PATH} login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN"
-          sh "${DOCKER_PATH} push harshapriya28/nodejs-demo-app:jenkins"
+          withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
+                                            usernameVariable: 'DOCKERHUB_USERNAME',
+                                            passwordVariable: 'DOCKERHUB_TOKEN')]) {
+            sh """
+              ${DOCKER_PATH} login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN
+              ${DOCKER_PATH} push $DOCKERHUB_USERNAME/nodejs-demo-app:jenkins
+            """
+          }
         }
       }
     }
