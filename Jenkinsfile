@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    PATH = "/usr/local/bin:/usr/bin:/bin"
+    DOCKER_PATH = "/usr/local/bin/docker"
   }
 
   stages {
@@ -15,9 +15,7 @@ pipeline {
     stage('Build (Docker)') {
       steps {
         script {
-          docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
-            def app = docker.build("harshapriya28/nodejs-demo-app:jenkins", "nodejs-demo-app")
-          }
+          sh "${DOCKER_PATH} build -t harshapriya28/nodejs-demo-app:jenkins nodejs-demo-app"
         }
       }
     }
@@ -25,9 +23,7 @@ pipeline {
     stage('Test (run container)') {
       steps {
         script {
-          docker.image("harshapriya28/nodejs-demo-app:jenkins").inside {
-            sh 'npm test'
-          }
+          sh "${DOCKER_PATH} run --rm harshapriya28/nodejs-demo-app:jenkins npm test"
         }
       }
     }
@@ -35,12 +31,10 @@ pipeline {
     stage('Push to Docker Hub') {
       steps {
         script {
-          docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
-            docker.image("harshapriya28/nodejs-demo-app:jenkins").push()
-          }
+          sh "${DOCKER_PATH} login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN"
+          sh "${DOCKER_PATH} push harshapriya28/nodejs-demo-app:jenkins"
         }
       }
     }
   }
 }
-
